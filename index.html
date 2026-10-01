@@ -167,7 +167,7 @@ body {
   }
 }
 
-.screen, .surface {
+.surface {
   position: absolute;
   inset: 0;
   display: flex;
@@ -252,8 +252,20 @@ body {
   font-size: 12px; letter-spacing: 0.35px; text-transform: uppercase;
   opacity: 0.72; margin-bottom: 1px;
 }
+@media (min-width: 400px) {
+  .notif-body { -webkit-line-clamp: 4; }
+}
 .notif-title { display: block; font-size: 15px; font-weight: 600; margin: 0 0 1px; }
-.notif-body { display: block; font-size: 15px; line-height: 1.28; margin: 0; opacity: 0.94; }
+.notif-body {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;   /* narrow phones need the extra line */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 15px;
+  line-height: 1.28;
+  margin: 0;
+  opacity: 0.94;
+}
 .notif-body .notif-link { text-decoration: underline; text-underline-offset: 2px; }
 button.notification {
   border: 0;
@@ -320,56 +332,8 @@ button.notification:active { transform: scale(0.975); background: rgba(255,255,2
 }
 .boot-error b { color: #fff; display: block; margin-bottom: 10px; font-size: 15px; }
 
-/* ---------------- navigation ----------------
-   Pill is the chosen mode. Arrows and Strip are still switchable
-   from the presenter panel; both come out before the demo. */
-
-.nav-arrow, .nav-pill, .nav-strip { display: none; }
-body.mode-arrows .nav-arrow.show { display: grid; }
-body.mode-pill .nav-pill.show { display: flex; }
-body.mode-strip .nav-strip { display: flex; }
-
-/* the strip takes its height from the device so nothing overlaps */
-body.mode-strip .device { height: calc(100vh - 68px); height: calc(100dvh - 68px); }
-@media (min-width: 480px) and (min-height: 720px) {
-  body.mode-strip .device { height: min(844px, calc(100vh - 160px)); height: min(844px, calc(100dvh - 160px)); }
-}
-
-.nav-strip {
-  width: 100%;
-  max-width: 390px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 0 4px;
-}
-.nav-strip button {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 44px;
-  padding: 0 18px;
-  border: 0;
-  border-radius: 12px;
-  font-family: var(--sf);
-  font-size: 15px;
-  font-weight: 600;
-  background: rgba(255,255,255,0.14);
-  color: #fff;
-  cursor: pointer;
-}
-.nav-strip button.go { background: #fff; color: #111; }
-.nav-strip button[disabled] { opacity: 0.25; cursor: default; }
-.nav-count {
-  font-family: var(--sf);
-  font-size: 13px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.5);
-  font-variant-numeric: tabular-nums;
-}
-
 .nav-pill {
+  display: none;            /* shown only on a beat, via .show */
   position: absolute;
   z-index: 22;
   right: 14px;
@@ -389,59 +353,8 @@ body.mode-strip .device { height: calc(100vh - 68px); height: calc(100dvh - 68px
 }
 .device.tone-dark .nav-pill { background: rgba(255,255,255,0.22); color: #fff; box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.2); }
 .device.tone-light .nav-pill { background: rgba(17,17,17,0.82); color: #fff; }
+.nav-pill.show { display: flex; }
 .nav-pill:active { transform: scale(0.96); }
-
-.presenter-modes { flex: 0 0 auto; display: flex; gap: 6px; margin-bottom: 10px; }
-.presenter-modes button {
-  flex: 1 1 0;
-  border: 0;
-  border-radius: 10px;
-  padding: 10px 0;
-  font-family: var(--sf);
-  font-size: 12px;
-  font-weight: 600;
-  background: rgba(255,255,255,0.09);
-  color: rgba(255,255,255,0.6);
-  cursor: pointer;
-}
-.presenter-modes button.on { background: rgba(255,255,255,0.22); color: #fff; }
-
-/* ---------------- step arrows ---------------- */
-
-.nav-arrow {
-  position: absolute; top: 50%; z-index: 20;
-  width: 40px; height: 40px; border: 0; border-radius: 50%;
-  display: none; place-items: center;
-  transform: translateY(-50%);
-  backdrop-filter: blur(12px) saturate(160%);
-  -webkit-backdrop-filter: blur(12px) saturate(160%);
-  transition: opacity 160ms ease, transform 160ms ease;
-}
-.nav-arrow.prev { left: 10px; }
-.nav-arrow.next { right: 10px; }
-.nav-arrow:active { transform: translateY(-50%) scale(0.9); }
-
-.device.tone-dark .nav-arrow {
-  background: rgba(255,255,255,0.17);
-  color: rgba(255,255,255,0.92);
-  box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.16);
-}
-.device.tone-light .nav-arrow {
-  background: rgba(0,0,0,0.07);
-  color: rgba(0,0,0,0.5);
-  box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.07);
-}
-
-/* Slow nudge on the forward arrow so it reads as the thing to tap. */
-.nav-arrow.next.show { animation: nudge 2.8s ease-in-out infinite; }
-@keyframes nudge {
-  0%, 62%, 100% { transform: translateY(-50%) translateX(0); }
-  74%           { transform: translateY(-50%) translateX(3px); }
-  86%           { transform: translateY(-50%) translateX(0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .nav-arrow.next.show { animation: none; }
-}
 
 /* ==================================================================
    VISION ZONE — DrDoctor patient portal (pp vision).
@@ -894,7 +807,7 @@ body.mode-strip .device { height: calc(100vh - 68px); height: calc(100dvh - 68px
   .v-todo-box.done svg, .v-todo-row.settling, .v-todo-row.landed { animation: none; }
 }
 .v-todo-text { flex: 1 1 auto; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; border: 0; background: none; padding: 0; font-family: var(--v-sans); color: inherit; text-align: left; cursor: pointer; }
-.v-todo-text b { font-size: 12px; font-weight: 700; line-height: 1.2; }
+.v-todo-text b { font-size: 16px; font-weight: 700; line-height: 1.2; }
 .v-todo-text span { font-size: 12px; font-weight: 400; line-height: 1.2; }
 
 /* --- Chat (side story). No Vision component for this yet. --- */
@@ -1051,25 +964,12 @@ body.mode-strip .device { height: calc(100vh - 68px); height: calc(100dvh - 68px
 
 <div class="device" id="device">
   <div id="stage"></div>
-
-  <button class="nav-arrow prev" id="navPrev" type="button" aria-label="Previous">
-    <svg width="13" height="21" viewBox="0 0 13 21" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2 2.5 10.5 10 19"/></svg>
-  </button>
-  <button class="nav-arrow next" id="navNext" type="button" aria-label="Next">
-    <svg width="13" height="21" viewBox="0 0 13 21" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2l7.5 8.5L3 19"/></svg>
-  </button>
   <button class="nav-pill" id="navPill" type="button" data-nav="next">Next
     <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 1l4.5 5.5L2 12"/></svg>
   </button>
 
-
   <div class="presenter-panel" id="presenterPanel">
     <h2>Presenter</h2>
-    <div class="presenter-modes" id="navModes">
-      <button type="button" data-mode="arrows">Arrows</button>
-      <button type="button" data-mode="strip">Strip</button>
-      <button type="button" data-mode="pill">Pill</button>
-    </div>
     <div class="presenter-steps" id="presenterSteps"></div>
     <div class="presenter-actions">
       <button type="button" id="btnClose">Close</button>
@@ -1077,16 +977,6 @@ body.mode-strip .device { height: calc(100vh - 68px); height: calc(100dvh - 68px
     </div>
   </div>
 </div>
-
-  <div class="nav-strip" id="navStrip">
-    <button type="button" data-nav="prev" id="stripPrev">
-      <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 1 1.5 6.5 6 12"/></svg>
-      Back</button>
-    <span class="nav-count" id="stripCount"></span>
-    <button type="button" data-nav="next" class="go" id="stripNext">Next
-      <svg width="8" height="13" viewBox="0 0 8 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 1l4.5 5.5L2 12"/></svg>
-    </button>
-  </div>
 </div>
 
 <script>
@@ -1141,7 +1031,10 @@ window.addEventListener("error", function (e) {
       portalFirstVisit: { date: "Wednesday 30 September", time: "9:14" },
       waitingWell:      { date: "Tuesday 10 November",   time: "10:15" },
       formDone:         { date: "Tuesday 10 November",   time: "10:18" },
+      quietPreInvite:   { date: "Monday 16 November",    time: "9:18" },
+      bookingInvite:    { date: "Monday 16 November",    time: "9:20" },
       appointmentBooked:{ date: "Thursday 19 November",  time: "14:05" },
+      questionnaire:    { date: "Thursday 19 November",  time: "17:41" },
       testsReminder:    { date: "Friday 11 December",    time: "9:30" },
       quietWait:        { date: "Tuesday 10 November",   time: "10:12" },
       quietPreBooking:  { date: "Thursday 19 November",  time: "14:02" },
@@ -1155,8 +1048,11 @@ window.addEventListener("error", function (e) {
       preOpChecklist:   { date: "Sunday 7 February",     time: "10:05" },
       quietSurgeryDay:  { date: "Tuesday 9 February",    time: "6:20" },
       pifuDischarge:    { date: "Monday 22 February",   time: "15:10" },
-      pifuForm:         { date: "Monday 10 May",         time: "11:40" },
+      quietThreeMonths: { date: "Monday 24 May",         time: "9:58" },
+      threeMonthForm:   { date: "Monday 24 May",         time: "10:00" },
+      pifuForm:         { date: "Monday 24 May",         time: "10:02" },
       quietAfterPifu:   { date: "Wednesday 9 June",      time: "9:18" },
+      discharged:       { date: "Wednesday 9 June",      time: "9:19" },
       homeResources:    { date: "Wednesday 9 June",      time: "9:20" },
       quietBeforeSarah: { date: "Thursday 20 August",    time: "19:36" },
       sarahChat:        { date: "Thursday 20 August",    time: "19:40" }
@@ -1183,42 +1079,72 @@ window.addEventListener("error", function (e) {
      a given message, so the history builds as the story moves. */
   DEMO.messages = [
     {
+      id: "referral-reviewed",
       at: DEMO.timeline.referralReviewed,
       text: "Your referral to the " + DEMO.specialty + " team at " + DEMO.trust.site +
             " is being reviewed. We'll be in touch as soon as we can."
     },
     {
+      id: "referral-accepted",
       at: DEMO.timeline.referralAccepted,
       text: "Good news, your referral to " + DEMO.specialty +
             " has been accepted. Set up your profile to see advice while you wait: ",
       link: DEMO.portal.label
     },
     {
+      id: "waiting-well",
       at: DEMO.timeline.waitingWell,
       text: "While you wait for your " + DEMO.specialty.toLowerCase() +
             " appointment, please tell us how you have been feeling. It takes about 2 minutes: ",
       link: DEMO.trust.domain + "/waiting-well"
     },
     {
+      /* The booking invite David never answers. The voice call that follows
+         is shown on the laptop deck, not here. Kept deliberately so the
+         voice call has something to follow; the room is told to ignore it. */
+      id: "booking-invite",
+      at: DEMO.timeline.bookingInvite,
+      text: "You can now book your cardiology appointment at " + DEMO.appointment.site +
+            ". Choose a time that suits you: ",
+      link: DEMO.trust.domain + "/book",
+      /* The one message that shows a link it cannot open. Deliberate: the
+         story is that David ignores it, and the room is told to as well. */
+      showLink: true
+    },
+    {
+      id: "appointment-booked",
       at: DEMO.timeline.appointmentBooked,
       text: "Your " + DEMO.specialty.toLowerCase() + " appointment is booked for " +
             DEMO.appointment.dateShort + " at " + DEMO.appointment.time + ", " +
-            DEMO.appointment.site + ". Details here: ",
+            DEMO.appointment.site + "."
+    },
+    {
+      /* Points David at the questionnaire rather than the story jumping
+         straight into the portal. Run-through, 30 September. */
+      id: "questionnaire",
+      at: DEMO.timeline.questionnaire,
+      text: "You have a pre-appointment questionnaire to complete before " +
+            DEMO.appointment.dateShort + ". You can find it in your portal: ",
       link: DEMO.trust.domain
     },
     {
+      id: "tests-reminder",
       at: DEMO.timeline.testsReminder,
       text: "Before your " + DEMO.specialty.toLowerCase() + " appointment on " +
             DEMO.appointment.dateShort + " you need a blood test and an ECG. Please book them here: ",
       link: DEMO.trust.domain + "/tests"
     },
     {
+      id: "pre-op-form",
       at: DEMO.timeline.preOpForm,
-      text: "Thank you for coming in today. Please complete your pre-op assessment before your " +
-            DEMO.procedureForPatients + ": ",
-      link: DEMO.trust.domain + "/pre-op"
+      /* Ends mid-word on purpose. The real message would carry a link; this one
+         has none, so nothing can appear however the text wraps on the day. */
+      text: "Thank you for coming in today. You'll need to do a pre-op assessment before " +
+            "your " + DEMO.procedureForPatients + ". Please complete it as soon as possible. " +
+            "It will take about ten minutes. Click he..."
     },
     {
+      id: "meds-reminder",
       at: DEMO.timeline.medsReminder,
       text: "Please stop taking your " + DEMO.medication + " from today, ahead of your " +
             DEMO.procedureForPatients + " on " + DEMO.surgery.dateShort +
@@ -1226,14 +1152,43 @@ window.addEventListener("error", function (e) {
       link: DEMO.trust.domain + "/checklist"
     },
     {
+      id: "pifu-discharge",
       at: DEMO.timeline.pifuDischarge,
       /* Wording follows how NHS trusts actually describe PIFU to patients:
-         the term is always spelled out and explained, never assumed. */
-      text: "You are now on patient initiated follow up. We will not book routine appointments. " +
-            "If your symptoms change, tell us using this form: ",
+         the term is always spelled out and explained, never assumed.
+         Ends mid-word on purpose and carries no link: the form arrives
+         three months later, so this message must not lead into it. */
+      text: "You are now on patient initiated follow up. We will not book routine " +
+            "appointments. If your symptoms change, tell us using this for..."
+    },
+    {
+      id: "three-month-form",
+      at: DEMO.timeline.threeMonthForm,
+      /* Sent automatically three months after David was put on PIFU.
+         This is what leads into the form, not the discharge message. */
+      text: "You have been on patient initiated follow up for three months. " +
+            "Please tell us how you are doing using this form: ",
       link: DEMO.trust.domain + "/pifu"
+    },
+    {
+      id: "discharged",
+      at: DEMO.timeline.discharged,
+      /* The link sits after the portal clause, not after the GP one.
+         Previously the colon made it read as a link to the GP. */
+      text: "We have reviewed your form and discharged you from " +
+            DEMO.specialty.toLowerCase() + ". Contact your GP if you have any problems. " +
+            "Your advice stays here: ",
+      link: DEMO.trust.domain
     }
   ];
+
+  /* Look a message up by name, so inserting one cannot shift the others. */
+  function message(id) {
+    for (var i = 0; i < DEMO.messages.length; i++) {
+      if (DEMO.messages[i].id === id) return DEMO.messages[i];
+    }
+    throw new Error("No message with id " + id);
+  }
 
   /* ================================================================
      SHARED FRAGMENTS
@@ -1281,9 +1236,9 @@ window.addEventListener("error", function (e) {
      STEP RENDERERS
      ================================================================ */
 
-  function stepLock(messageIndex, tappable) {
+  function stepLock(messageId, tappable) {
     return function () {
-    var m = DEMO.messages[messageIndex];
+    var m = message(messageId);
     var t = m.at;
     return '' +
       '<div class="surface apple-lock">' +
@@ -1307,7 +1262,8 @@ window.addEventListener("error", function (e) {
                 '<span class="notif-meta"><span>Messages</span><span>now</span></span>' +
                 '<span class="notif-title">' + DEMO.trust.senderId + '</span>' +
                 '<span class="notif-body">' + m.text +
-                  (m.link ? '<span class="notif-link">' + m.link + '</span>' : "") + '</span>' +
+                  ((tappable || m.showLink) && m.link
+                    ? '<span class="notif-link">' + m.link + '</span>' : "") + '</span>' +
               '</span>' +
             (tappable ? '</button>' : '</div>') +
           '</div>' +
@@ -1525,7 +1481,6 @@ window.addEventListener("error", function (e) {
       '</div>';
   }
 
-
   /* The Latest activity list shows the three most recent, newest first.
      "See older activity" appears only once that cap is reached,
      since it is what stands in for everything below the fold. */
@@ -1714,7 +1669,6 @@ window.addEventListener("error", function (e) {
       '</div>';
   }
 
-
   /* ================================================================
      BLOOD TEST BOOKING
      Interactive. Pick a date with slots, then Continue.
@@ -1795,7 +1749,6 @@ window.addEventListener("error", function (e) {
                : (d % 10 === 3 && d !== 13) ? "rd" : "th";
     return name + " " + d + suffix;
   }
-
 
   function bookingWhen() {
     var c = chosenOrFirst();
@@ -2081,19 +2034,18 @@ window.addEventListener("error", function (e) {
 
   var PIFU = {
     title: "Tell us how you are",
-    intro: "Please tell us about your current symptoms and any support you need. This will help us decide the best next step for your care.",
-    question: "What do you need help with today?",
+    intro: "It has been three months since your procedure. Your answers help us decide whether you still need to be seen by the team.",
+    /* Deliberately the same question the waiting well form asked on screen 8,
+       when the answer was "most days". Here he answers "not at all", which is
+       what gets him discharged. NEEDS CLINICAL SIGN-OFF. */
+    question: "Since your procedure, how often have you noticed palpitations?",
     options: [
-      "My palpitations or breathlessness have got worse",
-      "I need advice about my heart medication",
-      "I need a medication review or prescription",
-      "I am having side effects from my medication (e.g. dizziness, bruising, feeling very tired)",
-      "Other"
+      "Not at all",
+      "Once or twice",
+      "Most days",
+      "Every day"
     ],
-    /* He is not deteriorating, he just wants advice about his medicines.
-       That keeps the ending consistent with screen 29, where he is
-       discharged back to his GP. */
-    chosen: 1
+    chosen: 0
   };
 
   function stepPifuForm() {
@@ -2224,33 +2176,39 @@ window.addEventListener("error", function (e) {
     { id: "lock-quiet-quietopen", kind: "beat", tone: "dark", slide: null, frame: null,
       label: "Lock screen: quiet, the story opens", render: stepLockQuiet("quietOpen") },
     { id: "lock-referral",   kind: "beat", tone: "dark",  slide: 3, frame: "66",
-      label: "Lock screen: referral being reviewed", render: stepLock(0) },
+      label: "Lock screen: referral being reviewed", render: stepLock("referral-reviewed") },
     { id: "lock-quiet-quietpreaccepted", kind: "beat", tone: "dark", slide: null, frame: null,
       label: "Lock screen: quiet, eight days on", render: stepLockQuiet("quietPreAccepted") },
     { id: "lock-accepted", kind: "interactive", tone: "dark", slide: 7, frame: "67",
-      label: "Lock screen: referral accepted, portal link", render: stepLock(1, true) },
+      label: "Lock screen: referral accepted, portal link", render: stepLock("referral-accepted", true) },
     { id: "home-useful-links", kind: "beat", tone: "light", slide: 7, frame: "3916:30065",
       label: "Portal home: welcome update, useful links", render: stepHomeUsefulLinks },
     { id: "lock-quiet-quietwait", kind: "beat", tone: "dark", slide: null, frame: null,
       label: "Lock screen: quiet, six weeks on", render: stepLockQuiet("quietWait") },
     { id: "lock-waiting-well", kind: "interactive", tone: "dark", slide: null, frame: null,
-      label: "Lock screen: waiting well form request", render: stepLock(2, true) },
+      label: "Lock screen: waiting well form request", render: stepLock("waiting-well", true) },
     { id: "form-waiting-well", kind: "interactive", tone: "light", slide: 8, frame: "3912:29756",
       label: "Waiting well form: three questions", render: stepWaitingWellForm },
     { id: "form-submitted", kind: "beat", tone: "light", slide: 8, frame: "3928:30838",
       label: "Form submitted confirmation", render: stepFormSubmitted },
+    { id: "lock-quiet-quietpreinvite", kind: "beat", tone: "dark", slide: null, frame: null,
+      label: "Lock screen: quiet, six days on", render: stepLockQuiet("quietPreInvite") },
+    { id: "lock-booking-invite", kind: "beat", tone: "dark", slide: 11, frame: null,
+      label: "Lock screen: invite to book (ignored)", render: stepLock("booking-invite") },
     { id: "lock-quiet-quietprebooking", kind: "beat", tone: "dark", slide: null, frame: null,
-      label: "Lock screen: quiet, nine days on", render: stepLockQuiet("quietPreBooking") },
+      label: "Lock screen: quiet, three days on", render: stepLockQuiet("quietPreBooking") },
     { id: "lock-appointment-booked", kind: "beat", tone: "dark", slide: 13, frame: null,
-      label: "Lock screen: appointment booked", render: stepLock(3) },
+      label: "Lock screen: appointment booked", render: stepLock("appointment-booked") },
     { id: "lock-quiet-quietevening", kind: "beat", tone: "dark", slide: null, frame: null,
       label: "Lock screen: quiet, later that evening", render: stepLockQuiet("quietEvening") },
+    { id: "lock-questionnaire", kind: "interactive", tone: "dark", slide: 14, frame: null,
+      label: "Lock screen: pre-appointment questionnaire", render: stepLock("questionnaire", true) },
     { id: "home-appointment", kind: "beat", tone: "light", slide: 14, frame: "3932:32106",
       label: "Portal home: appointment booked, form to do", render: stepHomeAppointment },
     { id: "lock-quiet-quietpretests", kind: "beat", tone: "dark", slide: null, frame: null,
       label: "Lock screen: quiet, three weeks on", render: stepLockQuiet("quietPreTests") },
     { id: "lock-tests-reminder", kind: "interactive", tone: "dark", slide: 10, frame: null,
-      label: "Lock screen: book bloods and ECG", render: stepLock(4, true) },
+      label: "Lock screen: book bloods and ECG", render: stepLock("tests-reminder", true) },
     { id: "booking-date", kind: "interactive", tone: "light", slide: 10, frame: "3939:32249",
       label: "Book a blood test: choose a date", render: stepBloodTestBooking },
     { id: "booking-slot", kind: "interactive", tone: "light", slide: 10, frame: "3939:32530",
@@ -2262,21 +2220,27 @@ window.addEventListener("error", function (e) {
     { id: "lock-quiet-appointment-day", kind: "beat", tone: "dark", slide: null, frame: null,
       label: "Lock screen: quiet, morning of the appointment", render: stepLockQuiet("appointmentDay") },
     { id: "lock-pre-op-form", kind: "beat", tone: "dark", slide: 18, frame: null,
-      label: "Lock screen: pre-op form to complete", render: stepLock(5) },
+      label: "Lock screen: pre-op form to complete", render: stepLock("pre-op-form") },
     { id: "lock-quiet-quietpremeds", kind: "beat", tone: "dark", slide: null, frame: null,
       label: "Lock screen: quiet, three weeks on", render: stepLockQuiet("quietPreMeds") },
     { id: "lock-meds-reminder", kind: "interactive", tone: "dark", slide: 21, frame: null,
-      label: "Lock screen: stop your medication", render: stepLock(6, true) },
+      label: "Lock screen: stop your medication", render: stepLock("meds-reminder", true) },
     { id: "pre-op-checklist", kind: "beat", tone: "light", slide: 21, frame: "3961:34125",
       label: "Pre-op checklist", render: stepPreOpChecklist },
     { id: "lock-quiet-quietsurgeryday", kind: "beat", tone: "dark", slide: null, frame: null,
       label: "Lock screen: quiet, the morning of surgery", render: stepLockQuiet("quietSurgeryDay") },
-    { id: "lock-pifu-discharge", kind: "interactive", tone: "dark", slide: 22, frame: null,
-      label: "Lock screen: discharged to PIFU", render: stepLock(7, true) },
+    { id: "lock-pifu-discharge", kind: "beat", tone: "dark", slide: 22, frame: null,
+      label: "Lock screen: discharged to PIFU", render: stepLock("pifu-discharge") },
+    { id: "lock-quiet-quietthreemonths", kind: "beat", tone: "dark", slide: null, frame: null,
+      label: "Lock screen: quiet, three months on", render: stepLockQuiet("quietThreeMonths") },
+    { id: "lock-three-month-form", kind: "interactive", tone: "dark", slide: 24, frame: null,
+      label: "Lock screen: three-month form sent automatically", render: stepLock("three-month-form", true) },
     { id: "pifu-form", kind: "beat", tone: "light", slide: 24, frame: "3970:47581",
-      label: "PIFU form: what do you need help with", render: stepPifuForm },
+      label: "Three-month check form: palpitations since surgery", render: stepPifuForm },
     { id: "lock-quiet-quietafterpifu", kind: "beat", tone: "dark", slide: null, frame: null,
-      label: "Lock screen: quiet, a month on", render: stepLockQuiet("quietAfterPifu") },
+      label: "Lock screen: quiet, two weeks on", render: stepLockQuiet("quietAfterPifu") },
+    { id: "lock-discharged", kind: "interactive", tone: "dark", slide: 26, frame: null,
+      label: "Lock screen: discharged, contact your GP", render: stepLock("discharged", true) },
     { id: "home-resources", kind: "beat", tone: "light", slide: 26, frame: "3970:47654",
       label: "Portal home: helpful resources", render: stepHomeResources },
     { id: "lock-quiet-quietbeforesarah", kind: "beat", tone: "dark", slide: null, frame: null,
@@ -2290,15 +2254,9 @@ window.addEventListener("error", function (e) {
      ================================================================ */
 
   var stage = document.getElementById("stage");
-  var navPrev = document.getElementById("navPrev");
-  var navNext = document.getElementById("navNext");
   var device = document.getElementById("device");
   var stepNumber = document.getElementById("stepNumber");
   var navPill = document.getElementById("navPill");
-  var stripPrev = document.getElementById("stripPrev");
-  var stripNext = document.getElementById("stripNext");
-  var stripCount = document.getElementById("stripCount");
-  var navMode = "arrows";
   var panel = document.getElementById("presenterPanel");
   var panelSteps = document.getElementById("presenterSteps");
   var index = 0;
@@ -2312,17 +2270,8 @@ window.addEventListener("error", function (e) {
     device.classList.toggle("tone-dark", step.tone === "dark");
     device.classList.toggle("tone-light", step.tone !== "dark");
 
-    var isBeat = step.kind === "beat";
-    navPrev.classList.toggle("show", isBeat && index > 0);
-    navNext.classList.toggle("show", isBeat && index < STEPS.length - 1);
-
-    /* The pill sits on the screen, so it follows the same rule as the
-       arrows. The strip is outside the phone, so it stays put and just
-       greys out, which also means an interactive step is never a trap. */
-    navPill.classList.toggle("show", isBeat && index < STEPS.length - 1);
-    stripPrev.disabled = index === 0;
-    stripNext.disabled = index === STEPS.length - 1;
-    stripCount.textContent = (index + 1) + " / " + STEPS.length;
+    navPill.classList.toggle("show",
+      step.kind === "beat" && index < STEPS.length - 1);
 
     stepNumber.innerHTML = "<b>Screen " + (index + 1) + "</b> of " +
       STEPS.length + " &nbsp;·&nbsp; " + step.label;
@@ -2472,9 +2421,6 @@ window.addEventListener("error", function (e) {
        controls. This keeps a demo from jumping under your thumb. */
   });
 
-  navNext.addEventListener("click", function (e) { e.stopPropagation(); next(); });
-  navPrev.addEventListener("click", function (e) { e.stopPropagation(); prev(); });
-
   function bindNav(el) {
     el.addEventListener("click", function (e) {
       e.stopPropagation();
@@ -2482,28 +2428,7 @@ window.addEventListener("error", function (e) {
       if (el.getAttribute("data-nav") === "next") next(); else prev();
     });
   }
-  bindNav(navPill); bindNav(stripPrev); bindNav(stripNext);
-
-  function setNavMode(mode) {
-    navMode = mode;
-    var body = document.body;
-    body.classList.toggle("mode-arrows", mode === "arrows");
-    body.classList.toggle("mode-strip", mode === "strip");
-    body.classList.toggle("mode-pill", mode === "pill");
-    var btns = document.querySelectorAll("#navModes button");
-    for (var i = 0; i < btns.length; i++) {
-      btns[i].classList.toggle("on", btns[i].getAttribute("data-mode") === mode);
-    }
-    closePanel();
-    render();
-  }
-
-  document.getElementById("navModes").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-mode]");
-    if (!b) return;
-    e.stopPropagation();
-    setNavMode(b.getAttribute("data-mode"));
-  });
+  bindNav(navPill);
 
   document.addEventListener("keydown", function (e) {
     if (e.key === "ArrowRight" || e.key === " ") { next(); }
@@ -2586,12 +2511,12 @@ window.addEventListener("error", function (e) {
   });
   panel.addEventListener("click", function (e) { e.stopPropagation(); });
 
-  setNavMode("pill");
+  render();
 
   /* exposed for the test harness */
   window.__demo = {
     goTo: goTo, next: next, prev: prev, reset: reset,
-    steps: STEPS, data: DEMO, updatesSection: updatesSection, setNavMode: setNavMode,
+    steps: STEPS, data: DEMO, updatesSection: updatesSection,
     at: function () { return index; }
   };
 })();
